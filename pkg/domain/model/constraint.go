@@ -9,7 +9,7 @@ const (
 
 type Constraint struct {
 	Key       string
-	Type      ConstraintType
+	KeyType   ConstraintType
 	Requests  int
 	BlockTime int
 }

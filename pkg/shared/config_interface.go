@@ -5,4 +5,5 @@ type ConfigInterface interface {
 	GetMaxRequests() int
 	GetBlockTime() int
 	GetConstraintList() string
+	GetCacheEngine() string
 }

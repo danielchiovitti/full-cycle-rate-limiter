@@ -26,7 +26,7 @@ func NewRedisCache(
 				blockTime, _ := strconv.Atoi(innerValue[3])
 				cList = append(cList, model.Constraint{
 					Key:       innerValue[1],
-					Type:      model.ConstraintType(innerValue[0]),
+					KeyType:   model.ConstraintType(innerValue[0]),
 					Requests:  requests,
 					BlockTime: blockTime,
 				})
