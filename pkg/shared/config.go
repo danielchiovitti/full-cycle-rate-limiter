@@ -26,7 +26,8 @@ func NewConfig() ConfigInterface {
 }
 
 type Config struct {
-	Port uint16 `envconfig:"PORT" required:"true"`
+	Port        uint16 `envconfig:"PORT" required:"true"`
+	MaxRequests int    `envconfig:"MAX_REQUESTS" required:"true"`
 }
 
 func (c *Config) GetPort() uint16 {
