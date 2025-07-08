@@ -8,6 +8,7 @@ package full_cycle_rate_limiter
 
 import (
 	"github.com/google/wire"
+	"rate-limiter/pkg/infrastructure/cache/redis"
 	"rate-limiter/pkg/presentation"
 	"rate-limiter/pkg/presentation/middleware"
 	"rate-limiter/pkg/presentation/route"
@@ -27,4 +28,4 @@ func InitializeLoader() *presentation.Loader {
 
 // wire.go:
 
-var superSet = wire.NewSet(presentation.NewLoader, shared.NewConfig, route.NewHealthRoute, route.NewGameRoute, middleware.NewRatingMiddleware)
+var superSet = wire.NewSet(presentation.NewLoader, shared.NewConfig, route.NewHealthRoute, route.NewGameRoute, middleware.NewRatingMiddleware, redis.NewRedisCache)

@@ -1,16 +1,40 @@
 package redis
 
-import "sync"
+import (
+	"rate-limiter/pkg/domain/model"
+	"rate-limiter/pkg/shared"
+	"strconv"
+	"strings"
+	"sync"
+)
 
 var redisCacheLock sync.Mutex
 var redisCacheInstance *RedisCache
 
-func NewRedisCache() *RedisCache {
+func NewRedisCache(
+	config shared.ConfigInterface,
+) *RedisCache {
 	if redisCacheInstance == nil {
 		redisCacheLock.Lock()
 		defer redisCacheLock.Unlock()
 		if redisCacheInstance == nil {
-			redisCacheInstance = &RedisCache{}
+			list := strings.Split(config.GetConstraintList(), ";")
+			cList := make([]model.Constraint, len(list))
+			for _, v := range list {
+				innerValue := strings.Split(v, ",")
+				requests, _ := strconv.Atoi(innerValue[2])
+				blockTime, _ := strconv.Atoi(innerValue[3])
+				cList = append(cList, model.Constraint{
+					Key:       innerValue[1],
+					Type:      model.ConstraintType(innerValue[0]),
+					Requests:  requests,
+					BlockTime: blockTime,
+				})
+			}
+
+			redisCacheInstance = &RedisCache{
+				config: config,
+			}
 		}
 	}
 
@@ -18,6 +42,8 @@ func NewRedisCache() *RedisCache {
 }
 
 type RedisCache struct {
+	config         shared.ConfigInterface
+	constraintList []model.Constraint
 }
 
 func (r *RedisCache) SetValue(key, value string, ttl int) error {

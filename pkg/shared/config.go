@@ -26,10 +26,24 @@ func NewConfig() ConfigInterface {
 }
 
 type Config struct {
-	Port        uint16 `envconfig:"PORT" required:"true"`
-	MaxRequests int    `envconfig:"MAX_REQUESTS" required:"true"`
+	Port           uint16 `envconfig:"PORT" required:"true"`
+	MaxRequests    int    `envconfig:"MAX_REQUESTS" required:"true"`
+	BlockTime      int    `envconfig:"BLOCK_TIME" required:"true"`
+	ConstraintList string `envconfig:"CONSTRAINT_LIST" required:"true"`
 }
 
 func (c *Config) GetPort() uint16 {
 	return c.Port
+}
+
+func (c *Config) GetMaxRequests() int {
+	return c.MaxRequests
+}
+
+func (c *Config) GetBlockTime() int {
+	return c.BlockTime
+}
+
+func (c *Config) GetConstraintList() string {
+	return c.ConstraintList
 }
