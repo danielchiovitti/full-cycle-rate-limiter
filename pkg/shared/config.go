@@ -31,6 +31,7 @@ type Config struct {
 	BlockTime      int    `envconfig:"BLOCK_TIME" required:"true"`
 	ConstraintList string `envconfig:"CONSTRAINT_LIST" required:"true"`
 	CacheEngine    string `envconfig:"CACHE_ENGINE" required:"true"`
+	RedisHost      string `envconfig:"REDIS_HOST" required:"true"`
 }
 
 func (c *Config) GetPort() uint16 {

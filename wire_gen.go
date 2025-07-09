@@ -20,7 +20,8 @@ import (
 func InitializeLoader() *presentation.Loader {
 	configInterface := shared.NewConfig()
 	healthRoute := route.NewHealthRoute()
-	ratingMiddleware := middleware.NewRatingMiddleware()
+	checkLimitUseCaseFactoryInterface := check_limit_usecase_factory.NewCheckLimitUseCaseFactory(configInterface)
+	ratingMiddleware := middleware.NewRatingMiddleware(checkLimitUseCaseFactoryInterface)
 	gameRoute := route.NewGameRoute(ratingMiddleware)
 	loader := presentation.NewLoader(configInterface, healthRoute, gameRoute)
 	return loader

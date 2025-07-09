@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"github.com/redis/go-redis/v9"
 	"rate-limiter/pkg/domain/model"
 	"rate-limiter/pkg/shared"
 	"strconv"
@@ -19,7 +20,7 @@ func NewRedisCache(
 		defer redisCacheLock.Unlock()
 		if redisCacheInstance == nil {
 			list := strings.Split(config.GetConstraintList(), ";")
-			cList := make([]model.Constraint, len(list))
+			var cList []model.Constraint
 			for _, v := range list {
 				innerValue := strings.Split(v, ",")
 				requests, _ := strconv.Atoi(innerValue[2])
@@ -33,7 +34,8 @@ func NewRedisCache(
 			}
 
 			redisCacheInstance = &RedisCache{
-				config: config,
+				config:         config,
+				constraintList: cList,
 			}
 		}
 	}
@@ -44,9 +46,15 @@ func NewRedisCache(
 type RedisCache struct {
 	config         shared.ConfigInterface
 	constraintList []model.Constraint
+	rdb            *redis.Client
 }
 
 func (r *RedisCache) SetValue(key, value string, ttl int) error {
+	//rdb := redis.NewClient(&redis.Options{
+	//	Addr:     "localhost:6379", // Endereço do Redis
+	//	Password: "",               // Senha, se houver
+	//	DB:       0,                // Banco (0 é o padrão)
+	//})
 	return nil
 }
 
