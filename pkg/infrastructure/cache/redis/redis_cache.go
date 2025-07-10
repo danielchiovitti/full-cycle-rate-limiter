@@ -83,7 +83,7 @@ func (r *RedisCache) IncrValue(ctx context.Context, keyType model.ConstraintType
 	return val, nil
 }
 
-func (r *RedisCache) GetValue(ctx context.Context, key string) (string, error) {
+func (r *RedisCache) GetValue(ctx context.Context, keyType model.ConstraintType, key string) (string, error) {
 	return "", nil
 }
 
