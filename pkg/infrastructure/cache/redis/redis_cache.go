@@ -1,12 +1,17 @@
 package redis
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/redis/go-redis/v9"
 	"rate-limiter/pkg/domain/model"
+	redis2 "rate-limiter/pkg/infrastructure/database/redis"
 	"rate-limiter/pkg/shared"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 var redisCacheLock sync.Mutex
@@ -14,6 +19,7 @@ var redisCacheInstance *RedisCache
 
 func NewRedisCache(
 	config shared.ConfigInterface,
+	redisProvider redis2.RedisProviderInterface,
 ) *RedisCache {
 	if redisCacheInstance == nil {
 		redisCacheLock.Lock()
@@ -33,10 +39,13 @@ func NewRedisCache(
 				})
 			}
 
+			rdb, _ := redisProvider.GetRedisClient()
 			redisCacheInstance = &RedisCache{
 				config:         config,
 				constraintList: cList,
+				rdb:            rdb,
 			}
+			redisCacheInstance.preload()
 		}
 	}
 
@@ -49,15 +58,46 @@ type RedisCache struct {
 	rdb            *redis.Client
 }
 
-func (r *RedisCache) SetValue(key, value string, ttl int) error {
-	//rdb := redis.NewClient(&redis.Options{
-	//	Addr:     "localhost:6379", // Endereço do Redis
-	//	Password: "",               // Senha, se houver
-	//	DB:       0,                // Banco (0 é o padrão)
-	//})
-	return nil
+func (r *RedisCache) SetValue(ctx context.Context, keyType model.ConstraintType, key string, value interface{}, ttl int) error {
+	builtKey := r.buildKey(keyType, key)
+	err := r.rdb.Set(ctx, builtKey, value, time.Duration(ttl)*time.Second).Err()
+	return err
 }
 
-func (r *RedisCache) GetValue(key string) (string, error) {
+func (r *RedisCache) IncrValue(ctx context.Context, keyType model.ConstraintType, key string, ttl int) (int64, error) {
+	builtKey := r.buildKey(keyType, key)
+	val, err := r.rdb.Incr(ctx, builtKey).Result()
+	if err != nil {
+		return 0, nil
+	}
+
+	exists, err := r.rdb.TTL(ctx, builtKey).Result()
+	if err != nil {
+		return 0, err
+	}
+
+	if exists < 0 {
+		r.rdb.Expire(ctx, builtKey, time.Duration(ttl)*time.Second)
+	}
+
+	return val, nil
+}
+
+func (r *RedisCache) GetValue(ctx context.Context, key string) (string, error) {
 	return "", nil
+}
+
+func (r *RedisCache) buildKey(keyType model.ConstraintType, key string) string {
+	return fmt.Sprintf("%s_%s", keyType, key)
+}
+
+func (r *RedisCache) preload() {
+	for _, v := range r.constraintList {
+		val, err := json.Marshal(v)
+		if err != nil {
+			panic("error marshalling preload values")
+		}
+		ctx := context.Background()
+		err = r.SetValue(ctx, v.KeyType, v.Key, val, 0)
+	}
 }
