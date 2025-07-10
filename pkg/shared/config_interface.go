@@ -6,4 +6,7 @@ type ConfigInterface interface {
 	GetBlockTime() int
 	GetConstraintList() string
 	GetCacheEngine() string
+	GetRedisHost() string
+	GetRedisPort() int
+	GetRedisPassword() string
 }

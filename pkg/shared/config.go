@@ -32,6 +32,8 @@ type Config struct {
 	ConstraintList string `envconfig:"CONSTRAINT_LIST" required:"true"`
 	CacheEngine    string `envconfig:"CACHE_ENGINE" required:"true"`
 	RedisHost      string `envconfig:"REDIS_HOST" required:"true"`
+	RedisPort      int    `envconfig:"REDIS_PORT" required:"true"`
+	RedisPassword  string `envconfig:"REDIS_PASSWORD" required:"true"`
 }
 
 func (c *Config) GetPort() uint16 {
@@ -52,4 +54,16 @@ func (c *Config) GetConstraintList() string {
 
 func (c *Config) GetCacheEngine() string {
 	return c.CacheEngine
+}
+
+func (c *Config) GetRedisHost() string {
+	return c.RedisHost
+}
+
+func (c *Config) GetRedisPort() int {
+	return c.RedisPort
+}
+
+func (c *Config) GetRedisPassword() string {
+	return c.RedisPassword
 }
