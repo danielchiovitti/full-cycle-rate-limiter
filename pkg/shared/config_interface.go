@@ -9,4 +9,5 @@ type ConfigInterface interface {
 	GetRedisHost() string
 	GetRedisPort() int
 	GetRedisPassword() string
+	GetTimeRange() int
 }

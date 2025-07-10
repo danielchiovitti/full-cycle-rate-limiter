@@ -29,6 +29,7 @@ type Config struct {
 	Port           uint16 `envconfig:"PORT" required:"true"`
 	MaxRequests    int    `envconfig:"MAX_REQUESTS" required:"true"`
 	BlockTime      int    `envconfig:"BLOCK_TIME" required:"true"`
+	TimeRange      int    `envconfig:"TIME_RANGE" required:"true"`
 	ConstraintList string `envconfig:"CONSTRAINT_LIST" required:"true"`
 	CacheEngine    string `envconfig:"CACHE_ENGINE" required:"true"`
 	RedisHost      string `envconfig:"REDIS_HOST" required:"true"`
@@ -66,4 +67,8 @@ func (c *Config) GetRedisPort() int {
 
 func (c *Config) GetRedisPassword() string {
 	return c.RedisPassword
+}
+
+func (c *Config) GetTimeRange() int {
+	return c.TimeRange
 }

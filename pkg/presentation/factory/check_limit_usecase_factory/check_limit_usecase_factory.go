@@ -36,5 +36,5 @@ func (c *CheckLimitUseCaseFactory) Build() check_limit.CheckLimitUseCaseInterfac
 		panic("cache engine not implemented")
 	}
 
-	return check_limit.NewCheckLimitUseCase(engine)
+	return check_limit.NewCheckLimitUseCase(engine, c.config)
 }
